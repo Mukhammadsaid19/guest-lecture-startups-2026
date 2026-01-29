@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>From Student to CEO - Presentation</title>
+	<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+	<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+	<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Mono:wght@400;700&display=swap"
+		rel="stylesheet">
+	<style>
+		body,
+		* {
+			font-family: 'Urbanist', sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		.font-mono {
+			font-family: 'Space Mono', monospace;
+		}
+
+		.border-3 {
+			border-width: 3px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="root"></div>
+	<script type="text/babel">
+		const { useState, useEffect, useCallback } = React;
+
+		const GooglyEyes = ({ size = 60, className = "", lookDirection = "center" }) => {
+			const pupilOffset = lookDirection === "left" ? -2 : lookDirection === "right" ? 2 : 0;
+			const pupilOffsetY = lookDirection === "up" ? -2 : lookDirection === "down" ? 2 : 0;
+			return (
+				<svg width={size} height={size * 0.55} viewBox="0 0 60 33" className={className}>
+					<ellipse cx="15" cy="16.5" rx="14" ry="16" fill="#BFFF00" stroke="black" strokeWidth="2.5" />
+					<ellipse cx="15" cy="16.5" rx="10" ry="12" fill="white" />
+					<ellipse cx={15 + pupilOffset} cy={18 + pupilOffsetY} rx="6" ry="7" fill="black" />
+					<circle cx={13 + pupilOffset} cy={15 + pupilOffsetY} r="2" fill="white" />
+					<ellipse cx="45" cy="16.5" rx="14" ry="16" fill="#BFFF00" stroke="black" strokeWidth="2.5" />
+					<ellipse cx="45" cy="16.5" rx="10" ry="12" fill="white" />
+					<ellipse cx={45 + pupilOffset} cy={18 + pupilOffsetY} rx="6" ry="7" fill="black" />
+					<circle cx={43 + pupilOffset} cy={15 + pupilOffsetY} r="2" fill="white" />
+				</svg>
+			);
+		};
+
+		const WavyLine = ({ width = 200, className = "", color = "#BFFF00" }) => (
+			<svg width={width} height="50" viewBox="0 0 200 50" className={className} preserveAspectRatio="none">
+				<path d="M0 30 Q25 10, 50 30 T100 30 T150 30 T200 30" fill="none" stroke="black" strokeWidth="14" strokeLinecap="round" />
+				<path d="M0 25 Q25 5, 50 25 T100 25 T150 25 T200 25" fill="none" stroke={color} strokeWidth="14" strokeLinecap="round" />
+			</svg>
+		);
+
+		const ThoughtBubble = ({ children, className = "" }) => (
+			<div className={`relative ${className}`}>
+				<div className="bg-white border-3 border-black rounded-2xl px-4 py-2 font-black text-sm">{children}</div>
+				<div className="absolute -bottom-2 left-4 w-3 h-3 bg-white border-2 border-black rounded-full" />
+				<div className="absolute -bottom-5 left-2 w-2 h-2 bg-white border-2 border-black rounded-full" />
+			</div>
+		);
+
+		const SpikyBurst = ({ children, size = 80, color = "#C084FC", className = "" }) => (
+			<div className={`relative ${className}`} style={{ width: size, height: size }}>
+				<svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+					<path d="M50 0 L58 30 L85 15 L70 42 L100 50 L70 58 L85 85 L58 70 L50 100 L42 70 L15 85 L30 58 L0 50 L30 42 L15 15 L42 30 Z" fill={color} stroke="black" strokeWidth="2.5" />
+				</svg>
+				<div className="absolute inset-0 flex items-center justify-center font-black text-black text-xs">{children}</div>
+			</div>
+		);
+
+		const UzbekOrnament = ({ size = 100, className = "", color = "#C084FC" }) => (
+			<svg width={size} height={size} viewBox="0 0 100 100" className={className}>
+				<g fill="none" stroke={color} strokeWidth="1.5" opacity="0.4">
+					<path d="M50 10 L60 40 L90 30 L65 50 L90 70 L60 60 L50 90 L40 60 L10 70 L35 50 L10 30 L40 40 Z" />
+					<path d="M50 25 L65 50 L50 75 L35 50 Z" />
+					<circle cx="50" cy="50" r="8" />
+					<circle cx="50" cy="10" r="3" fill={color} /><circle cx="90" cy="50" r="3" fill={color} />
+					<circle cx="50" cy="90" r="3" fill={color} /><circle cx="10" cy="50" r="3" fill={color} />
+				</g>
+			</svg>
+		);
+
+		const Card = ({ children, className = "", bgColor = "white", shadowColor = "black" }) => (
+			<div className={`border-3 border-black rounded-3xl ${className}`} style={{ backgroundColor: bgColor, boxShadow: `6px 6px 0 ${shadowColor}` }}>{children}</div>
+		);
+
+		const ImagePlaceholder = ({ prompt, aspectRatio = "1/1", className = "" }) => (
+			<div className={`bg-gray-100 border-3 border-dashed border-gray-400 rounded-2xl flex items-center justify-center p-4 ${className}`} style={{ aspectRatio }}>
+				<div className="text-center">
+					<div className="text-3xl mb-2">🎨</div>
+					<p className="font-mono text-gray-500 leading-relaxed text-xs"><span className="font-bold text-gray-700">PROMPT:</span><br />{prompt}</p>
+				</div>
+			</div>
+		);
+
+		const Pill = ({ children, color = "#BFFF00", className = "" }) => (
+			<span className={`inline-block px-4 py-2 border-2 border-black rounded-full font-bold ${className}`} style={{ backgroundColor: color }}>{children}</span>
+		);
+
+		function Presentation() {
+			const [currentSlide, setCurrentSlide] = useState(0);
+			const totalSlides = 25;
+
+			const nextSlide = useCallback(() => {
+				if (currentSlide < totalSlides - 1) setCurrentSlide(prev => prev + 1);
+			}, [currentSlide]);
+
+			const prevSlide = useCallback(() => {
+				if (currentSlide > 0) setCurrentSlide(prev => prev - 1);
+			}, [currentSlide]);
+
+			useEffect(() => {
+				const handleKeyDown = (e) => {
+					if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+					else if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); prevSlide(); }
+				};
+				window.addEventListener('keydown', handleKeyDown);
+				return () => window.removeEventListener('keydown', handleKeyDown);
+			}, [nextSlide, prevSlide]);
+
+			const slides = [
+				// SLIDE 0: TITLE
+				<div key="0" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<div className="absolute top-8 left-8"><GooglyEyes size={80} lookDirection="right" /></div>
+					<div className="absolute bottom-20 right-12"><GooglyEyes size={60} lookDirection="left" /></div>
+					<div className="absolute top-1/4 right-20"><WavyLine width={150} color="#C084FC" className="rotate-12" /></div>
+					<UzbekOrnament size={120} className="absolute bottom-12 left-12" color="#BFFF00" />
+					<div className="absolute bottom-1/4 right-1/4"><SpikyBurst size={80} color="#BFFF00">2026</SpikyBurst></div>
+					<img src="gentra-sticker.png" alt="" className="absolute top-16 right-32 w-28 rotate-12 drop-shadow-lg" />
+					<img src="soqqa-200.png" alt="" className="absolute bottom-8 left-1/3 w-20 -rotate-6 drop-shadow-lg" />
+					<img src="duppi.png" alt="" className="absolute top-1/3 left-6 w-16 rotate-6 drop-shadow-lg" />
+					<div className="flex items-center gap-16 z-10 max-w-7xl w-full">
+						<div className="flex-shrink-0">
+							<Card bgColor="#BFFF00" className="p-4">
+								<img src="first-slide-cover.jpeg" alt="Muhammadsaid Mamasaidov" className="rounded-2xl border-3 border-black object-cover" style={{ width: '374px', aspectRatio: '3/4', objectPosition: 'left' }} />
+							</Card>
+						</div>
+						<div className="flex-1">
+							<h1 className="text-7xl md:text-9xl font-black italic uppercase tracking-tight leading-none mb-6">
+								From <span className="text-purple-500">Student</span><br />to <span className="text-lime-500">CEO</span>
+							</h1>
+							<div className="flex flex-wrap items-center gap-3 mb-8">
+								<Pill color="#C084FC" className="text-xl">BOOTSTRAPPING</Pill>
+								<span className="text-3xl font-black">×</span>
+								<Pill color="#BFFF00" className="text-xl">MICRO-SAAS</Pill>
+							</div>
+							<div className="text-3xl font-black">MUHAMMADSAID MAMASAIDOV</div>
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 1: ABOUT ME
+				<div key="1" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-purple-100">
+					<div className="absolute top-8 left-8"><GooglyEyes size={60} lookDirection="right" /></div>
+					<div className="absolute bottom-10 right-10"><GooglyEyes size={50} lookDirection="left" /></div>
+					<img src="gentra-sticker.png" alt="" className="absolute bottom-8 left-10 w-20 -rotate-6 drop-shadow-lg" />
+					<img src="duppi.png" alt="" className="absolute top-12 right-8 w-16 rotate-12 drop-shadow-lg" />
+					<UzbekOrnament size={150} className="absolute top-0 right-0 translate-x-1/4 -translate-y-1/4" color="#C084FC" />
+					<div className="max-w-5xl w-full flex items-center gap-12 z-10">
+						<div className="flex-shrink-0 flex flex-col items-center">
+							<div className="relative">
+								<img src="my-photo.jpg" alt="Muhammadsaid Mamasaidov" className="w-56 h-56 rounded-full border-8 border-white object-cover rotate-3 drop-shadow-xl" />
+								<div className="absolute -bottom-2 -right-2 bg-lime-400 border-3 border-black rounded-full px-3 py-1 text-sm font-black rotate-6">👋 Hey!</div>
+							</div>
+							<img src="logo-tilmoch.svg" alt="Tilmoch.ai" className="h-8 mt-4" />
+						</div>
+						<div className="flex-1">
+							<h2 className="text-5xl md:text-6xl font-black italic mb-6">Muhammadsaid <span className="text-purple-500">Mamasaidov</span></h2>
+							<p className="text-2xl font-bold text-gray-600 mb-6">Founder & CEO @ Tilmoch.ai</p>
+							<div className="grid grid-cols-3 gap-4">
+								<Card bgColor="#BFFF00" className="p-4 text-center">
+									<p className="text-4xl font-black">$150k</p>
+									<p className="text-sm font-bold mt-1">in Grants</p>
+								</Card>
+								<Card bgColor="#C084FC" className="p-4 text-center">
+									<p className="text-4xl font-black text-white">$250k</p>
+									<p className="text-sm font-bold text-white/80 mt-1">Raised</p>
+								</Card>
+								<Card bgColor="#22D3EE" className="p-4 text-center">
+									<p className="text-4xl font-black">200k</p>
+									<p className="text-sm font-bold mt-1">Users/mo</p>
+								</Card>
+							</div>
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 2: SECTION 01
+				<div key="2" className="h-full flex items-center justify-center relative overflow-hidden bg-purple-500">
+					<div className="absolute top-10 left-10"><GooglyEyes size={60} lookDirection="down" /></div>
+					<div className="absolute bottom-10 right-10"><GooglyEyes size={60} lookDirection="up" /></div>
+					<UzbekOrnament size={200} className="absolute bottom-0 left-0 -translate-x-1/4 translate-y-1/4" color="white" />
+					<img src="choynak-piyola.png" alt="" className="absolute top-8 right-24 w-24 rotate-12 drop-shadow-lg" />
+					<div className="text-center z-10">
+						<div className="text-[12rem] font-black text-purple-400 leading-none italic">01</div>
+						<h2 className="text-6xl md:text-8xl font-black italic uppercase -mt-8 text-white">The Game Changed</h2>
+					</div>
+				</div>,
+
+				// SLIDE 2: REALITY CHECK
+				<div key="2" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<div className="absolute top-8 right-8"><SpikyBurst size={80} color="#FB923C">REAL</SpikyBurst></div>
+					<img src="tashkent-tv-tower.png" alt="" className="absolute bottom-6 left-8 w-20 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-4xl w-full">
+						<Card bgColor="#FB923C" className="p-8 mb-6">
+							<p className="text-5xl font-black text-white">Most startup advice?</p>
+							<p className="text-5xl font-black text-white mt-2">All about unicorns and valuations</p>
+						</Card>
+						<Card bgColor="#BFFF00" className="p-8">
+							<p className="text-4xl font-black">Trends for 2026 are:</p>
+							<p className="text-5xl font-black text-lime-700 mt-2">Bootstrap. Mobile. App Store.</p>
+						</Card>
+					</div>
+				</div>,
+
+				// SLIDE 3: DISTRIBUTION
+				<div key="3" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-black">
+					<div className="absolute bottom-10 left-10"><GooglyEyes size={50} lookDirection="right" /></div>
+					<img src="gentra-sticker.png" alt="" className="absolute top-12 right-8 w-24 rotate-6 drop-shadow-lg" />
+					<img src="duppi.png" alt="" className="absolute bottom-16 right-24 w-14 -rotate-12 drop-shadow-lg" />
+					<div className="max-w-5xl w-full text-center z-10">
+						<p className="text-5xl md:text-7xl font-black italic text-white mb-8">Why Mobile?</p>
+						<Card bgColor="#BFFF00" className="p-8">
+							<p className="text-5xl md:text-7xl font-black">DISTRIBUTION IS EVERYTHING.</p>
+						</Card>
+						<div className="grid grid-cols-3 gap-6 mt-8">
+							{[{ title: "App Store", emoji: "📱" }, { title: "TikTok/IG", emoji: "🎬" }, { title: "Word of Mouth", emoji: "🗣️" }].map((item, i) => (
+								<div key={i} className="text-center">
+									<div className="text-6xl mb-2">{item.emoji}</div>
+									<p className="text-2xl font-black text-white">{item.title}</p>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 4: TIER LIST
+				<div key="4" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<div className="absolute top-8 right-8"><SpikyBurst size={80} color="#BFFF00">META</SpikyBurst></div>
+					<img src="soqqa-200.png" alt="" className="absolute bottom-8 left-6 w-16 rotate-12 drop-shadow-lg" />
+					<div className="max-w-3xl w-full">
+						<h2 className="text-5xl font-black italic mb-10 text-center">The Tier List 🎮</h2>
+						<div className="space-y-4">
+							<Card bgColor="white" className="p-4 flex items-center gap-6">
+								<div className="w-16 h-16 bg-lime-400 border-3 border-black rounded-xl flex items-center justify-center text-4xl font-black flex-shrink-0">S</div>
+								<div className="flex flex-wrap gap-2">
+									{["📱 Mobile", "🧩 Extensions", "🤖 AI Agents"].map((item, i) => (
+										<span key={i} className="px-4 py-2 bg-lime-100 border-2 border-lime-500 rounded-full text-lg font-black">{item}</span>
+									))}
+								</div>
+							</Card>
+							<Card bgColor="white" className="p-4 flex items-center gap-6">
+								<div className="w-16 h-16 bg-cyan-400 border-3 border-black rounded-xl flex items-center justify-center text-4xl font-black flex-shrink-0">A</div>
+								<div className="flex flex-wrap gap-2">
+									{["💼 SaaS", "🎨 Creator Tools"].map((item, i) => (
+										<span key={i} className="px-4 py-2 bg-cyan-100 border-2 border-cyan-500 rounded-full text-lg font-black">{item}</span>
+									))}
+								</div>
+							</Card>
+							<Card bgColor="white" className="p-4 flex items-center gap-6">
+								<div className="w-16 h-16 bg-red-500 border-3 border-black rounded-xl flex items-center justify-center text-4xl font-black text-white flex-shrink-0">F</div>
+								<div className="flex flex-wrap gap-2">
+									{["🏢 B2B Enterprise", "🏛️ Gov"].map((item, i) => (
+										<span key={i} className="px-4 py-2 bg-red-100 border-2 border-red-500 rounded-full text-lg font-black">{item}</span>
+									))}
+								</div>
+							</Card>
+						</div>
+						<p className="text-3xl font-black italic mt-8 text-center">At your age → <span className="text-lime-600">Stay in S-tier</span></p>
+					</div>
+				</div>,
+
+				// SLIDE 5: COSTS
+				<div key="5" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-lime-100">
+					<div className="absolute top-8 left-8"><ThoughtBubble>REAL TALK 💸</ThoughtBubble></div>
+					<img src="choynak-piyola.png" alt="" className="absolute bottom-10 right-8 w-20 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-4xl w-full">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-8 text-center">What You Need to Start</h2>
+						<Card bgColor="white" className="p-8 mb-6">
+							<div className="space-y-4 text-2xl">
+								{[{ item: "Apple Developer", cost: "$99/year" }, { item: "Domain", cost: "$12/year" }, { item: "Hosting", cost: "$0" }, { item: "Test ads", cost: "$50" }].map((row, i) => (
+									<div key={i} className="flex justify-between border-b-2 border-gray-100 pb-2">
+										<span className="font-bold">{row.item}</span>
+										<span className="font-mono font-black text-lime-600">{row.cost}</span>
+									</div>
+								))}
+							</div>
+							<div className="mt-6 pt-4 border-t-4 border-black flex justify-between items-center text-3xl">
+								<span className="font-black">TOTAL:</span>
+								<span className="font-black text-4xl text-lime-600">~$160</span>
+							</div>
+						</Card>
+						<p className="text-3xl font-black text-center">That's ~2 million soum. You can afford this.</p>
+					</div>
+				</div>,
+
+				// SLIDE 6: SECTION 02
+				<div key="6" className="h-full flex items-center justify-center relative overflow-hidden bg-orange-500">
+					<div className="absolute top-12 right-12"><GooglyEyes size={60} lookDirection="center" /></div>
+					<UzbekOrnament size={180} className="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4" color="white" />
+					<img src="tashkent-tv-tower.png" alt="" className="absolute bottom-12 right-16 w-24 rotate-6 drop-shadow-lg" />
+					<div className="text-center z-10">
+						<div className="text-[12rem] font-black text-orange-400 leading-none italic">02</div>
+						<h2 className="text-6xl md:text-8xl font-black italic uppercase -mt-8 text-white">Zero to One</h2>
+					</div>
+				</div>,
+
+				// SLIDE 7: THIEL
+				<div key="7" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<img src="duppi.png" alt="" className="absolute top-8 right-12 w-16 rotate-12 drop-shadow-lg" />
+					<div className="max-w-6xl w-full grid grid-cols-5 gap-8 items-center">
+						<div className="col-span-2">
+							<img src="piter-thiel.jpeg" alt="Peter Thiel" className="w-full rounded-2xl border-3 border-black object-cover" style={{ aspectRatio: '1/1' }} />
+						</div>
+						<div className="col-span-3">
+							<blockquote className="text-4xl md:text-5xl font-black italic leading-tight mb-8">
+								"What great company is <span className="text-orange-500">nobody building?</span>"
+							</blockquote>
+							<div className="grid grid-cols-2 gap-4">
+								<Card bgColor="#FEE2E2" className="p-6">
+									<p className="text-3xl font-black text-red-600">❌ 1 to N</p>
+									<p className="text-xl text-gray-600 mt-2">Better Uber</p>
+								</Card>
+								<Card bgColor="#DCFCE7" className="p-6">
+									<p className="text-3xl font-black text-green-600">✓ 0 to 1</p>
+									<p className="text-xl text-gray-600 mt-2">New category</p>
+								</Card>
+							</div>
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 8: MONOPOLY
+				<div key="8" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-purple-100">
+					<div className="absolute bottom-10 right-10"><GooglyEyes size={50} /></div>
+					<img src="gentra-sticker.png" alt="" className="absolute top-6 left-8 w-20 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-6xl w-full grid grid-cols-2 gap-8 items-center">
+						<div>
+							<h2 className="text-5xl font-black italic mb-6">Build a Monopoly</h2>
+							<div className="space-y-4">
+								<Card bgColor="#FEE2E2" className="p-5 border-l-8 border-red-500">
+									<p className="text-2xl font-black italic">"Productivity app for everyone"</p>
+									<p className="text-lg text-gray-600">❌ vs 47,000 apps</p>
+								</Card>
+								<Card bgColor="#DCFCE7" className="p-5 border-l-8 border-green-500">
+									<p className="text-2xl font-black italic">"For med students studying USMLE"</p>
+									<p className="text-lg text-gray-600">✓ You OWN it</p>
+								</Card>
+							</div>
+						</div>
+						<img src="monopoly-guy.jpeg" alt="Monopoly Guy" className="w-full rounded-2xl border-3 border-black object-cover" style={{ aspectRatio: '1/1' }} />
+					</div>
+				</div>,
+
+				// SLIDE 9: 1-STAR REVIEWS
+				<div key="9" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<div className="absolute top-8 right-8"><SpikyBurst size={80} color="#BFFF00">TIP</SpikyBurst></div>
+					<img src="soqqa-200.png" alt="" className="absolute bottom-12 left-6 w-14 rotate-6 drop-shadow-lg" />
+					<div className="max-w-6xl w-full grid grid-cols-2 gap-8 items-center">
+						<div>
+							<h2 className="text-5xl font-black italic mb-6">Market Research Hack</h2>
+							<Card bgColor="#FB923C" className="p-6 mb-6">
+								<p className="text-3xl font-black text-white">Find apps where people are ANGRY.</p>
+							</Card>
+							<p className="text-2xl font-black">App Store 3-star reviews = Gold mine 💰</p>
+						</div>
+						<img src="market-research.jpeg" alt="Market Research" className="w-full rounded-2xl border-3 border-black object-cover" style={{ aspectRatio: '1/1' }} />
+					</div>
+				</div>,
+
+				// SLIDE 10: VALIDATION
+				<div key="10" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-cyan-100">
+					<div className="absolute top-8 right-8"><SpikyBurst size={80} color="#EF4444">!</SpikyBurst></div>
+					<img src="choynak-piyola.png" alt="" className="absolute top-10 left-6 w-20 rotate-6 drop-shadow-lg" />
+					<div className="max-w-6xl w-full">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-6 text-center">Validate Before You Build</h2>
+						<div className="grid grid-cols-4 gap-4">
+							{[{ step: "1", title: "Landing Page", color: "#C084FC" }, { step: "2", title: "$50 in Ads", color: "#FB923C" }, { step: "3", title: "Track Clicks", color: "#BFFF00" }, { step: "4", title: "Decide", color: "#22D3EE" }].map((item, i) => (
+								<Card key={i} bgColor={item.color} className="p-6 text-center">
+									<div className="text-5xl font-black mb-2">{item.step}</div>
+									<p className="text-xl font-black">{item.title}</p>
+								</Card>
+							))}
+						</div>
+						<div className="grid grid-cols-2 gap-4 mt-6">
+							<Card bgColor="#FEE2E2" className="p-4 text-center">
+								<p className="text-2xl font-black text-red-600">&lt;1% clicks = PIVOT</p>
+							</Card>
+							<Card bgColor="#DCFCE7" className="p-4 text-center">
+								<p className="text-2xl font-black text-green-600">&gt;5% clicks = BUILD IT</p>
+							</Card>
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 11: SECTION 03
+				<div key="11" className="h-full flex items-center justify-center relative overflow-hidden bg-lime-400">
+					<div className="absolute top-10 right-10"><GooglyEyes size={60} lookDirection="down" /></div>
+					<UzbekOrnament size={180} className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4" color="black" />
+					<img src="duppi.png" alt="" className="absolute bottom-16 left-12 w-16 -rotate-12 drop-shadow-lg" />
+					<div className="text-center z-10">
+						<div className="text-[12rem] font-black text-lime-300 leading-none italic">03</div>
+						<h2 className="text-6xl md:text-8xl font-black italic uppercase -mt-8">Distribution</h2>
+					</div>
+				</div>,
+
+				// SLIDE 12: CONTENT
+				<div key="12" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-900">
+					<img src="tashkent-tv-tower.png" alt="" className="absolute top-8 left-10 w-20 rotate-6 drop-shadow-lg" />
+					<img src="soqqa-200.png" alt="" className="absolute bottom-8 right-12 w-14 -rotate-12 drop-shadow-lg" />
+					<div className="max-w-5xl w-full text-center">
+						<p className="text-4xl font-black text-red-500 mb-4">❌ "Build it and they'll come"</p>
+						<Card bgColor="#BFFF00" className="p-8 mb-8">
+							<p className="text-5xl md:text-6xl font-black">Content is King.</p>
+						</Card>
+						<div className="grid grid-cols-3 gap-6">
+							{[{ title: "UGC", emoji: "📸" }, { title: "Founder-Led", emoji: "🎤" }, { title: "Community", emoji: "🎯" }].map((item, i) => (
+								<div key={i} className="text-center">
+									<div className="text-6xl mb-2">{item.emoji}</div>
+									<p className="text-2xl font-black text-white">{item.title}</p>
+								</div>
+							))}
+						</div>
+						<p className="text-3xl font-black text-lime-400 mt-8">You need a Twitter/X account. Not optional.</p>
+					</div>
+				</div>,
+
+				// SLIDE 13: ASO
+				<div key="13" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-purple-100">
+					<img src="gentra-sticker.png" alt="" className="absolute bottom-6 right-8 w-24 rotate-12 drop-shadow-lg" />
+					<div className="max-w-5xl w-full">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-8 text-center">ASO: Get Found</h2>
+						<div className="grid grid-cols-3 gap-6">
+							<Card bgColor="white" className="p-6 text-center">
+								<div className="text-5xl mb-3">🔑</div>
+								<p className="text-2xl font-black">Keywords</p>
+							</Card>
+							<Card bgColor="white" className="p-6 text-center">
+								<div className="text-5xl mb-3">📸</div>
+								<p className="text-2xl font-black">Screenshots</p>
+							</Card>
+							<Card bgColor="white" className="p-6 text-center">
+								<div className="text-5xl mb-3">⭐</div>
+								<p className="text-2xl font-black">Reviews</p>
+							</Card>
+						</div>
+						<Card bgColor="#BFFF00" className="p-6 mt-6 text-center">
+							<p className="text-2xl font-black">Find competitor with bad reviews. Steal their keywords. Win.</p>
+						</Card>
+					</div>
+				</div>,
+
+				// SLIDE 14: TARGET MARKET
+				<div key="14" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-cyan-100">
+					<div className="absolute bottom-10 right-10"><GooglyEyes size={50} /></div>
+					<img src="duppi.png" alt="" className="absolute top-6 left-8 w-14 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-4xl w-full">
+						<h2 className="text-5xl font-black italic mb-8 text-center">Target Market</h2>
+						<Card bgColor="#22D3EE" className="p-6 mb-6">
+							<p className="text-4xl font-black text-white text-center">Primary: US + EUROPE</p>
+						</Card>
+						<div className="grid grid-cols-3 gap-6 mb-6">
+							<Card bgColor="#DCFCE7" className="p-5 text-center">
+								<p className="text-5xl mb-2">🇺🇸</p>
+								<p className="text-2xl font-black">$9.99/mo</p>
+							</Card>
+							<Card bgColor="#DBEAFE" className="p-5 text-center">
+								<p className="text-5xl mb-2">🇪🇺</p>
+								<p className="text-2xl font-black">€6.99/mo</p>
+							</Card>
+							<Card bgColor="#FEE2E2" className="p-5 text-center">
+								<p className="text-5xl mb-2">🇺🇿</p>
+								<p className="text-2xl font-black">Free pls</p>
+							</Card>
+						</div>
+						<p className="text-3xl font-black italic text-center">Live in Tashkent 👑 California pays 💸</p>
+					</div>
+				</div>,
+
+				// SLIDE 15: MONEY
+				<div key="15" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-orange-100">
+					<div className="absolute top-8 right-8"><SpikyBurst size={80} color="#22C55E">$$$</SpikyBurst></div>
+					<img src="choynak-piyola.png" alt="" className="absolute bottom-8 left-6 w-20 rotate-6 drop-shadow-lg" />
+					<div className="max-w-5xl w-full">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-8 text-center">How to Get Paid</h2>
+						<div className="grid grid-cols-3 gap-6">
+							<Card bgColor="white" className="p-6 text-center">
+								<p className="text-4xl font-black mb-2">Stripe Atlas</p>
+								<p className="text-lg text-gray-600">US LLC ($500)</p>
+								<Pill color="#DCFCE7" className="mt-3 text-sm">&gt;$1K/mo</Pill>
+							</Card>
+							<Card bgColor="white" className="p-6 text-center">
+								<p className="text-4xl font-black mb-2">Payoneer</p>
+								<p className="text-lg text-gray-600">Works in UZ</p>
+								<Pill color="#FEF3C7" className="mt-3 text-sm">Starting out</Pill>
+							</Card>
+							<Card bgColor="white" className="p-6 text-center">
+								<p className="text-4xl font-black mb-2">Wise</p>
+								<p className="text-lg text-gray-600">Multi-currency</p>
+								<Pill color="#DBEAFE" className="mt-3 text-sm">Backup</Pill>
+							</Card>
+						</div>
+						<Card bgColor="#BFFF00" className="p-4 mt-6 text-center">
+							<p className="text-2xl font-black">Start with Payoneer → Graduate to Stripe Atlas</p>
+						</Card>
+					</div>
+				</div>,
+
+				// SLIDE 16: THREE PATHS
+				<div key="16" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<img src="tashkent-tv-tower.png" alt="" className="absolute top-8 left-6 w-20 -rotate-6 drop-shadow-lg" />
+					<img src="soqqa-200.png" alt="" className="absolute bottom-12 right-8 w-14 rotate-12 drop-shadow-lg" />
+					<div className="max-w-6xl w-full">
+						<h2 className="text-5xl font-black italic mb-6 text-center">Pick Your Path</h2>
+						<div className="grid grid-cols-3 gap-6 items-start max-w-4xl mx-auto">
+							<Card bgColor="white" className="p-6 text-center">
+								<div className="text-5xl mb-3">☕</div>
+								<p className="text-2xl font-black">Coffee Shop</p>
+								<p className="text-lg text-gray-500 mt-2">Freelance, Agency</p>
+							</Card>
+							<Card bgColor="#BFFF00" className="p-6 text-center relative">
+								<Pill color="black" className="absolute -top-3 -right-3 text-lime-400 text-sm">★ THIS</Pill>
+								<div className="text-5xl mb-3">📱</div>
+								<p className="text-2xl font-black">The App</p>
+								<p className="text-lg text-lime-700 mt-2">100% equity</p>
+							</Card>
+							<Card bgColor="white" className="p-6 text-center">
+								<div className="text-5xl mb-3">🚀</div>
+								<p className="text-2xl font-black">Rocket Ship</p>
+								<p className="text-lg text-gray-500 mt-2">Need VC</p>
+							</Card>
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 17: VC MATH
+				<div key="17" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-purple-100">
+					<img src="gentra-sticker.png" alt="" className="absolute bottom-10 right-6 w-24 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-5xl w-full">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-8 text-center">If You Go Venture...</h2>
+						<Card bgColor="white" className="p-8 mb-6">
+							<p className="text-2xl font-bold text-gray-500 mb-4">VC MATH (Portfolio of 30):</p>
+							<div className="space-y-3">
+								<p className="text-3xl"><span className="text-red-500 font-black">20</span> fail completely</p>
+								<p className="text-3xl"><span className="text-yellow-500 font-black">7</span> return 1-2x</p>
+								<p className="text-3xl"><span className="text-green-500 font-black">3</span> return the whole fund</p>
+							</div>
+						</Card>
+						<p className="text-3xl font-black text-center">They need you to be a potential outlier.</p>
+					</div>
+				</div>,
+
+				// SLIDE 18: CHEAT CODES
+				<div key="18" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-lime-100">
+					<div className="absolute top-8 left-8"><ThoughtBubble>FREE $$$</ThoughtBubble></div>
+					<img src="duppi.png" alt="" className="absolute bottom-8 right-6 w-16 rotate-12 drop-shadow-lg" />
+					<div className="max-w-6xl w-full">
+						<h2 className="text-5xl font-black italic mb-6 text-center">Cheat Codes 🎮</h2>
+						<div className="grid grid-cols-4 gap-6 items-start max-w-5xl mx-auto">
+							<Card bgColor="#DCFCE7" className="p-6 text-center">
+								<div className="text-4xl mb-3">💰</div>
+								<p className="text-xl font-black">Grants</p>
+								<p className="text-sm text-gray-600 mt-2">President Tech Award, Grants</p>
+							</Card>
+							<Card bgColor="#CFFAFE" className="p-6 text-center">
+								<div className="text-4xl mb-3">🚀</div>
+								<p className="text-xl font-black">Accelerators</p>
+								<p className="text-sm text-gray-600 mt-2">Plug & Play, UzCombinator</p>
+							</Card>
+							<Card bgColor="#F3E8FF" className="p-6 text-center">
+								<div className="text-4xl mb-3">📚</div>
+								<p className="text-xl font-black">Learn</p>
+								<p className="text-sm text-gray-600 mt-2">YC, Zero to One</p>
+							</Card>
+							<Card bgColor="#FFEDD5" className="p-6 text-center">
+								<div className="text-4xl mb-3">🛠️</div>
+								<p className="text-xl font-black">Tools</p>
+								<p className="text-sm text-gray-600 mt-2">Cursor, Claude</p>
+							</Card>
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 19: MENTAL GAME
+				<div key="19" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-900 text-white">
+					<UzbekOrnament size={150} className="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4" color="#BFFF00" />
+					<img src="choynak-piyola.png" alt="" className="absolute top-8 right-10 w-20 rotate-6 drop-shadow-lg" />
+					<div className="max-w-4xl w-full text-center">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-8 text-lime-400">The Mental Game</h2>
+						<Card bgColor="#1F2937" className="p-8 mb-6" shadowColor="#BFFF00">
+							<p className="text-3xl text-gray-400 mb-4">What they don't show:</p>
+							<p className="text-4xl font-black">Months of zero users.</p>
+							<p className="text-4xl font-black mt-2">3am debugging alone.</p>
+						</Card>
+						<p className="text-3xl font-black text-gray-400">12-24 months to real revenue is normal.</p>
+						<p className="text-4xl font-black text-lime-400 mt-4">99% of the battle is not quitting.</p>
+					</div>
+				</div>,
+
+				// SLIDE 20: RED FLAGS
+				<div key="20" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-red-50">
+					<div className="absolute top-8 right-8 text-5xl">🚩</div>
+					<img src="soqqa-200.png" alt="" className="absolute top-10 left-6 w-14 -rotate-12 drop-shadow-lg" />
+					<div className="max-w-4xl w-full">
+						<h2 className="text-5xl font-black italic mb-8 text-center">What <span className="text-red-500">NOT</span> To Do</h2>
+						<div className="grid grid-cols-2 gap-4">
+							{["Don't work with government", "Don't build for UZ first", "Don't wait for perfect", "Don't give up equity early", "Don't skip validation"].map((item, i) => (
+								<div key={i} className="flex items-center gap-4 p-4 bg-white border-3 border-red-200 rounded-xl">
+									<span className="text-red-500 text-3xl font-black">✕</span>
+									<p className="text-xl font-black">{item}</p>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>,
+
+				// SLIDE 21: 30 DAYS
+				<div key="21" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-lime-100">
+					<img src="tashkent-tv-tower.png" alt="" className="absolute top-6 right-8 w-20 rotate-6 drop-shadow-lg" />
+					<img src="gentra-sticker.png" alt="" className="absolute bottom-10 left-6 w-20 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-6xl w-full">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-6 text-center">Your First 30 Days</h2>
+						<div className="grid grid-cols-4 gap-4">
+							<Card bgColor="white" className="p-5 text-center">
+								<div className="text-4xl font-black text-purple-500">W1</div>
+								<p className="text-xl font-black mt-2">Research</p>
+								<p className="text-sm text-gray-600 mt-1">Find angry reviews</p>
+							</Card>
+							<Card bgColor="white" className="p-5 text-center">
+								<div className="text-4xl font-black text-cyan-500">W2</div>
+								<p className="text-xl font-black mt-2">Validate</p>
+								<p className="text-sm text-gray-600 mt-1">Talk to 10 people</p>
+							</Card>
+							<Card bgColor="white" className="p-5 text-center">
+								<div className="text-4xl font-black text-orange-500">W3</div>
+								<p className="text-xl font-black mt-2">Test</p>
+								<p className="text-sm text-gray-600 mt-1">$50 ads</p>
+							</Card>
+							<Card bgColor="white" className="p-5 text-center">
+								<div className="text-4xl font-black text-lime-600">W4</div>
+								<p className="text-xl font-black mt-2">Decide</p>
+								<p className="text-sm text-gray-600 mt-1">Build or pivot</p>
+							</Card>
+						</div>
+						<Card bgColor="#BFFF00" className="p-6 mt-6 text-center">
+							<p className="text-2xl font-black">Validated idea OR killed bad idea fast. Both wins.</p>
+						</Card>
+					</div>
+				</div>,
+
+				// SLIDE 22: CONNECT
+				<div key="22" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-50">
+					<div className="absolute top-8 left-8"><GooglyEyes size={50} lookDirection="right" /></div>
+					<div className="absolute bottom-8 right-8"><GooglyEyes size={50} lookDirection="left" /></div>
+					<img src="duppi.png" alt="" className="absolute top-12 right-12 w-16 rotate-12 drop-shadow-lg" />
+					<img src="choynak-piyola.png" alt="" className="absolute bottom-16 left-10 w-20 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-5xl w-full text-center z-10">
+						<h2 className="text-5xl md:text-6xl font-black italic mb-8">Let's <span className="text-lime-500">Connect</span></h2>
+						<div className="grid grid-cols-2 gap-6 mb-8">
+							<Card bgColor="#BFFF00" className="p-6">
+								<div className="text-5xl mb-3">🤝</div>
+								<p className="text-2xl font-black">Got Questions?</p>
+								<p className="text-lg mt-2">DM me anytime. I'll respond.</p>
+							</Card>
+							<Card bgColor="#C084FC" className="p-6">
+								<div className="text-5xl mb-3">🚀</div>
+								<p className="text-2xl font-black text-white">Startup Studio</p>
+								<p className="text-lg text-white/90 mt-2">We're forming a founder team.</p>
+							</Card>
+						</div>
+						<Card bgColor="white" className="p-6">
+							<div className="flex items-center justify-center gap-10">
+								<div className="flex flex-col items-center">
+									<img src="linkedin-qr.jpg" alt="LinkedIn QR" className="w-28 h-28 rounded-xl border-3 border-black" />
+									<p className="text-sm font-bold mt-2">LinkedIn</p>
+								</div>
+								<div className="flex flex-col gap-4 text-left">
+									<a href="https://t.me/saidov" className="flex items-center gap-3 text-xl font-bold hover:text-lime-600 transition-colors">
+										<span className="text-2xl">✈️</span> t.me/saidov
+									</a>
+									<a href="mailto:m.mamasaidov@tilmoch.ai" className="flex items-center gap-3 text-xl font-bold hover:text-lime-600 transition-colors">
+										<span className="text-2xl">✉️</span> m.mamasaidov@tilmoch.ai
+									</a>
+								</div>
+							</div>
+						</Card>
+					</div>
+				</div>,
+
+				// SLIDE 23: FINAL
+				<div key="23" className="h-full flex items-center justify-center p-10 relative overflow-hidden bg-gray-900 text-white">
+					<UzbekOrnament size={200} className="absolute top-0 left-0 -translate-x-1/3 -translate-y-1/3" color="#BFFF00" />
+					<UzbekOrnament size={150} className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4" color="#C084FC" />
+					<img src="gentra-sticker.png" alt="" className="absolute top-10 right-16 w-24 rotate-12 drop-shadow-lg" />
+					<img src="soqqa-200.png" alt="" className="absolute bottom-12 left-10 w-16 -rotate-6 drop-shadow-lg" />
+					<div className="max-w-5xl text-center z-10">
+						<div className="text-8xl text-lime-400 mb-6">"</div>
+						<p className="text-4xl md:text-5xl font-black italic text-white leading-tight mb-2">What are you afraid of losing</p>
+						<p className="text-4xl md:text-5xl font-black italic text-lime-400 leading-tight">when nothing in the world belongs to you?</p>
+						<div className="mt-10 flex items-center justify-center gap-4">
+							<div className="h-1 w-16 bg-lime-400 rounded-full"></div>
+							<p className="text-2xl font-bold text-gray-400 tracking-wide">MARCUS AURELIUS</p>
+							<div className="h-1 w-16 bg-lime-400 rounded-full"></div>
+						</div>
+						<p className="text-6xl md:text-8xl font-black italic text-white mt-12">Now go build.</p>
+					</div>
+				</div>,
+			];
+
+			return (
+				<div className="h-screen w-screen overflow-hidden bg-white text-gray-900">
+					<div className="fixed top-0 left-0 right-0 h-2 bg-gray-200 z-50">
+						<div className="h-full bg-lime-400 transition-all duration-300" style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }} />
+					</div>
+					<div className="fixed top-6 right-8 z-50 font-mono text-lg bg-black text-white px-4 py-2 rounded-full">
+						{currentSlide + 1} / {totalSlides}
+					</div>
+					<button onClick={prevSlide} disabled={currentSlide === 0}
+						className={`fixed left-6 top-1/2 -translate-y-1/2 z-50 w-14 h-14 rounded-full border-3 border-black flex items-center justify-center transition-all ${currentSlide === 0 ? 'bg-gray-200 text-gray-400' : 'bg-white hover:bg-lime-400'}`}
+						style={{ boxShadow: currentSlide > 0 ? '4px 4px 0 black' : 'none' }}>
+						<span className="text-2xl font-black">←</span>
+					</button>
+					<button onClick={nextSlide} disabled={currentSlide === totalSlides - 1}
+						className={`fixed right-6 top-1/2 -translate-y-1/2 z-50 w-14 h-14 rounded-full border-3 border-black flex items-center justify-center transition-all ${currentSlide === totalSlides - 1 ? 'bg-gray-200 text-gray-400' : 'bg-white hover:bg-lime-400'}`}
+						style={{ boxShadow: currentSlide < totalSlides - 1 ? '4px 4px 0 black' : 'none' }}>
+						<span className="text-2xl font-black">→</span>
+					</button>
+					<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 font-mono text-sm text-gray-400">
+						<span className="px-3 py-1 bg-gray-100 rounded border-2 border-gray-300">←</span>
+						<span className="px-3 py-1 bg-gray-100 rounded border-2 border-gray-300">→</span>
+						<span>SPACE</span>
+					</div>
+					<div className="relative h-full w-full">
+						{slides.map((slide, index) => (
+							<div key={index}
+								className={`absolute inset-0 transition-all duration-500 ease-out ${currentSlide === index ? 'opacity-100 translate-x-0' : index < currentSlide ? 'opacity-0 -translate-x-full' : 'opacity-0 translate-x-full'}`}>
+								{slide}
+							</div>
+						))}
+					</div>
+				</div>
+			);
+		}
+
+		ReactDOM.createRoot(document.getElementById('root')).render(<Presentation />);
+	</script>
+</body>
+
+</html>
